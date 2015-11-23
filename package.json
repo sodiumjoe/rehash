@@ -8,6 +8,7 @@
     "url": "https://github.com/sodiumjoe/rehash.git"
   },
   "scripts": {
+    "prepublish": "gulp prepublish",
     "build": "gulp",
     "test": "gulp test",
     "lint": "gulp lint"
