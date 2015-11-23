@@ -23,15 +23,12 @@ const libCompiler = webpack({
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'index.js'
+    filename: 'index.js',
+    library: 'rehash',
+    libraryTarget: 'commonjs2'
   },
   plugins: [
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.DefinePlugin({
-      'process.env': {
-        'NODE_ENV': JSON.stringify('production')
-      }
-    }),
     new webpack.optimize.UglifyJsPlugin({
       compressor: {
         warnings: false

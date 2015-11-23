@@ -32,5 +32,13 @@
     "vinyl-source-stream": "^1.1.0",
     "webpack": "^1.12.8"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash.assign": "^3.2.0",
+    "lodash.compose": "^2.4.1",
+    "lodash.isempty": "^3.0.4",
+    "lodash.isfunction": "^3.0.6",
+    "lodash.isplainobject": "^3.2.0",
+    "lodash.isundefined": "^3.0.1",
+    "lodash.reduce": "^3.1.2"
+  }
 }

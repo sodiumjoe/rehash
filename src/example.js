@@ -1,4 +1,4 @@
-import rehash, { assign } from './index.js';
+import rehash, { assign } from '../dist/index.js';
 import _ from 'lodash';
 import { createStore } from 'redux';
 

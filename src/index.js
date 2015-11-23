@@ -1,17 +1,25 @@
-export const assign = (...args) => Object.assign({}, ...args);
+import { default as _assign } from 'lodash.assign';
+import compose from 'lodash.compose';
+import reduce from 'lodash.reduce';
+import isFunction from 'lodash.isfunction';
+import isPlainObject from 'lodash.isplainobject';
+import isEmpty from 'lodash.isempty';
+import isUndefined from 'lodash.isundefined';
 
-export const createReducer = _.compose(recursiveCombineReducers, createReducerTree);
+export const assign = (...args) => _assign({}, ...args);
+
+export const createReducer = compose(recursiveCombineReducers, createReducerTree);
 
 export function separateStateAndXforms(tree) {
-	return _.reduce(tree, (memo, val, key) => {
-		if (_.isFunction(val)) {
+	return reduce(tree, (memo, val, key) => {
+		if (isFunction(val)) {
 			memo.xforms[key] = val;
 			return memo;
 		}
-		if (_.isPlainObject(val)) {
+		if (isPlainObject(val)) {
 			let { state, xforms } = separateStateAndXforms(val);
 			memo.state[key] = state;
-			if (!_.isEmpty(xforms)) {
+			if (!isEmpty(xforms)) {
 				memo.xforms[key] = xforms;
 			}
 			return memo;
@@ -25,8 +33,8 @@ export function separateStateAndXforms(tree) {
 }
 
 export function createActionCreatorTree(tree, path = []) {
-	return _.reduce(tree, (memo, val, key) => {
-		memo[key] = _.isFunction(val) ? (payload) => {
+	return reduce(tree, (memo, val, key) => {
+		memo[key] = isFunction(val) ? (payload) => {
 			return {
 				type: path.concat(key).join('.'),
 				payload
@@ -46,10 +54,10 @@ export default function (tree) {
 }
 
 function createReducerTree(tree, path = []) {
-	return _.reduce(tree, (memo, val, key) => {
+	return reduce(tree, (memo, val, key) => {
 		let currentPath = path.concat(key);
-		memo[key] = _.isFunction(val) ? (state, {type, payload}) => {
-			if (type === currentPath.join('.') && !_.isUndefined(state)) {
+		memo[key] = isFunction(val) ? (state, {type, payload}) => {
+			if (type === currentPath.join('.') && !isUndefined(state)) {
 				return val(state, payload);
 			}
 			return state;
@@ -60,9 +68,9 @@ function createReducerTree(tree, path = []) {
 
 function recursiveCombineReducers(tree) {
 	return (state, action) => {
-		let finalState = _.reduce(tree, (memo, val, key) => {
+		let finalState = reduce(tree, (memo, val, key) => {
 
-			if (_.isFunction(val)) {
+			if (isFunction(val)) {
 				return assign(memo, val(memo, action));
 			}
 
