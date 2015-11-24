@@ -1,8 +1,8 @@
-import rehash, { assign } from '../dist/index.js';
+import rehash, { assign, bindActionCreatorTree } from './index.js';
 import _ from 'lodash';
 import { createStore } from 'redux';
 
-let {
+const {
 	actionCreatorTree,
 	reducer,
 	state: initialState
@@ -51,8 +51,9 @@ let {
 
 });
 
-let store = createStore(reducer, initialState);
+const store = createStore(reducer, initialState);
 
 store.subscribe(() => console.log(store.getState()));
 window.store = store;
 window.actionCreatorTree = actionCreatorTree;
+window.dispatchTree = bindActionCreatorTree(actionCreatorTree, store.dispatch);

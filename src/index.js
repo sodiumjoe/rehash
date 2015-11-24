@@ -44,12 +44,24 @@ export function createActionCreatorTree(tree, path = []) {
 	}, {});
 }
 
+export function bindActionCreatorTree(tree, dispatch, path = []) {
+  return reduce(tree, (memo, val, key) => {
+    memo[key] = isFunction(val) ?
+      payload => dispatch(tree[key](payload)) :
+      bindActionCreatorTree(val, dispatch, path.concat(key));
+    return memo;
+  }, {});
+}
+
 export default function (tree) {
 	const { state, xforms } = separateStateAndXforms(tree);
+  const actionCreatorTree = createActionCreatorTree(xforms);
+  const dispatchTree = bindActionCreatorTree(actionCreatorTree);
 	return {
 		state,
 		reducer: createReducer(xforms),
-		actionCreatorTree: createActionCreatorTree(xforms)
+		actionCreatorTree,
+    dispatchTree
 	};
 }
 
