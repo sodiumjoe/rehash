@@ -9,65 +9,7 @@ import { createStore, compose, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { createHistory } from 'history';
 
-const {
-	actionCreatorTree,
-	reducer: rootReducer,
-	state
-}	= rehash({
-
-    items: ['foo'],
-
-    addItem(state, item) {
-      return assign(state, {
-        items: state.items ? state.items.concat(item) : [item]
-      });
-    },
-
-    pagination: {
-
-      currentPageIndex: 0,
-      totalPages: 5,
-
-      onPageSelect(state, pageNum) {
-        if (!pageNum) {
-          return state;
-        }
-        let pageIndex = pageNum - 1;
-        let maxPageIndex = state.totalPages - 1;
-        if (state.currentPageIndex === pageIndex) {
-          return state;
-        }
-        return assign(state, {
-          currentPageIndex: pageIndex < 0 ? 0 : pageIndex > maxPageIndex ? maxPageIndex : pageIndex
-        });
-      },
-
-      pageSizes: [ 50, 100, 250 ],
-      selectedPageSize: 50,
-
-      onPageSizeSelect(state, pageSize) {
-        if (!_.includes(state.pageSizes, pageSize)) {
-          return state;
-        }
-        return assign(state, {
-          selectedPageSize: pageSize
-        });
-      }
-
-    }
-
-});
-
-const initialState = { root: state };
-
-const reducer = combineReducers({
-  router: routerStateReducer,
-  root: rootReducer
-});
-
-const createStoreWithMiddleware = applyMiddleware(
-	thunk
-)(createStore);
+/* Containers */
 
 const App = createClass({
   render() {
@@ -98,6 +40,8 @@ const Goodbye = connect(state => state.root)(createClass({
   }
 }));
 
+/* Routes */
+
 const routes = (
   <Route path="/" component={App}>
     <IndexRoute component={Welcome} />
@@ -105,18 +49,79 @@ const routes = (
   </Route>
 );
 
+/* Reducer */
+
+const rehashDef = {
+
+  items: ['foo'],
+
+  addItem(state, item) {
+    return assign(state, {
+      items: state.items ? state.items.concat(item) : [item]
+    });
+  },
+
+  pagination: {
+
+    currentPageIndex: 0,
+    totalPages: 5,
+
+    onPageSelect(state, pageNum) {
+      if (!pageNum) {
+        return state;
+      }
+      let pageIndex = pageNum - 1;
+      let maxPageIndex = state.totalPages - 1;
+      if (state.currentPageIndex === pageIndex) {
+        return state;
+      }
+      return assign(state, {
+        currentPageIndex: pageIndex < 0 ? 0 : pageIndex > maxPageIndex ? maxPageIndex : pageIndex
+      });
+    },
+
+    pageSizes: [ 50, 100, 250 ],
+    selectedPageSize: 50,
+
+    onPageSizeSelect(state, pageSize) {
+      if (!_.includes(state.pageSizes, pageSize)) {
+        return state;
+      }
+      return assign(state, {
+        selectedPageSize: pageSize
+      });
+    }
+
+  }
+
+};
+
+const {
+	actionCreatorTree,
+	reducer: rootReducer,
+	state
+}	= rehash(rehashDef);
+
+const initialState = { root: state };
+
+const reducer = combineReducers({
+  router: routerStateReducer,
+  root: rootReducer
+});
+
+/* Store */
+
 const store = compose(
-	reduxReactRouter({
-		routes,
-		createHistory
-	})
-)(createStoreWithMiddleware)(reducer, initialState);
+  applyMiddleware(thunk),
+  reduxReactRouter({ routes, createHistory })
+)(createStore)(reducer, initialState);
 
-// store.subscribe(() => console.log(store.getState()));
-
+store.subscribe(() => console.log(store.getState()));
 window.store = store;
 window.actionCreatorTree = actionCreatorTree;
 window.dispatchTree = bindActionCreatorTree(actionCreatorTree, store.dispatch);
+
+/* Render */
 
 render(
 	<Provider store={store}>
