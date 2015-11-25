@@ -20,7 +20,9 @@ const libCompiler = webpack({
   entry: [
     './src/index'
   ],
-  extensions: ['', '.js'],
+	resolve: {
+		extensions: ['', '.jsx', '.js']
+	},
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'index.js',
@@ -41,7 +43,9 @@ const exampleCompiler = webpack({
   entry: [
     './src/example.jsx'
   ],
-  extensions: ['', '.jsx', '.js'],
+	resolve: {
+		extensions: ['', '.jsx', '.js']
+	},
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'example.js'
