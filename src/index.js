@@ -80,18 +80,11 @@ function createReducerTree(tree, path = []) {
 
 function recursiveCombineReducers(tree) {
 	return (state, action) => {
-		let finalState = reduce(tree, (memo, val, key) => {
-
-			if (isFunction(val)) {
-				return assign(memo, val(memo, action));
-			}
-
-			return assign(memo, {
-				[key]: recursiveCombineReducers(val)(memo[key], action)
-			});
+		return reduce(tree, (memo, val, key) => {
+      return assign(memo, isFunction(val) ? val(memo, action) : {
+        [key]: recursiveCombineReducers(val)(memo[key], action)
+      });
 
 		}, state);
-
-		return finalState;
 	};
 }

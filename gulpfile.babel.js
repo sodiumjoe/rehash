@@ -7,7 +7,6 @@ import gutil from 'gulp-util';
 import mocha from 'gulp-spawn-mocha';
 import path from 'path';
 import runSequence from 'run-sequence';
-import source from 'vinyl-source-stream';
 import webpack from 'webpack';
 
 const PORT = 8899;
@@ -21,20 +20,13 @@ const libCompiler = webpack({
   entry: [
     './src/index'
   ],
+  extensions: ['', '.js'],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'index.js',
     library: 'rehash',
     libraryTarget: 'commonjs2'
   },
-  plugins: [
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false
-      }
-    })
-  ],
   module: {
     loaders: [{
       test: /\.js$/,
@@ -47,15 +39,16 @@ const libCompiler = webpack({
 const exampleCompiler = webpack({
   devtool: 'source-map',
   entry: [
-    './src/example'
+    './src/example.jsx'
   ],
+  extensions: ['', '.jsx', '.js'],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'example.js'
   },
   module: {
     loaders: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       loaders: ['babel'],
       include: path.join(__dirname, 'src')
     }]
@@ -133,8 +126,8 @@ gulp.task('server', () => {
 	console.log(`Server started at http://localhost:${PORT}/`);
 });
 
-gulp.task('watch', ['default'], () => {
-	gulp.watch(['src/example.js'], ['build:dev']);
+gulp.task('watch', () => {
+	gulp.watch('src/example.jsx', ['build:dev']);
 	gulp.watch(['src/index.js', 'test/**/*.js'], ['build', 'build:dev', 'test']);
 });
 
