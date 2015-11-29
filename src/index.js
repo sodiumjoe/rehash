@@ -56,12 +56,10 @@ export function bindActionCreatorTree(tree, dispatch, path = []) {
 export default function (tree) {
 	const { state, xforms } = separateStateAndXforms(tree);
   const actionCreatorTree = createActionCreatorTree(xforms);
-  const dispatchTree = bindActionCreatorTree(actionCreatorTree);
 	return {
 		state,
 		reducer: createReducer(xforms),
-		actionCreatorTree,
-    dispatchTree
+		actionCreatorTree
 	};
 }
 
@@ -80,11 +78,10 @@ function createReducerTree(tree, path = []) {
 
 function recursiveCombineReducers(tree) {
 	return (state, action) => {
-		return reduce(tree, (memo, val, key) => {
+		return reduce(tree, (memo = {}, val, key) => {
       return assign(memo, isFunction(val) ? val(memo, action) : {
         [key]: recursiveCombineReducers(val)(memo[key], action)
       });
-
 		}, state);
 	};
 }
