@@ -37,27 +37,27 @@ const isThunk = node => {
   }
 }
 
-const createActionCreatorFn = (fn, type, actionCreatorTree) =>
+const createActionCreatorFn = (fn, path, actionCreatorTree) =>
   isThunk(fn)
   ? () => (dispatch, getState) => fn()(dispatch, getState, actionCreatorTree)
-  : payload => ({ type, payload });
+  : payload => ({ type: path.join('.'), payload });
 
 export const createActionCreatorTree = (tree, path = [], actionCreatorTree = {}) =>
   reduce(tree, (memo, node, key) => {
     let currentPath = path.concat(key);
-    let actionType = currentPath.join('.');
     return _assign(memo, {
       [key]: isFunction(node)
-        ? createActionCreatorFn(node, actionType, actionCreatorTree)
+        ? createActionCreatorFn(node, currentPath, actionCreatorTree)
         : createActionCreatorTree(node, currentPath, actionCreatorTree)
     });
-  }, actionCreatorTree);
+  }, isEmpty(actionCreatorTree) ? actionCreatorTree : {});
 
-export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo, node, key) => _assign(memo, {
+export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo, node, key) => {
+  return _assign(memo, {
   [key]: isFunction(node)
     ? payload => dispatch(tree[key](payload))
     : bindActionCreatorTree(node, dispatch, path.concat(key))
-}), {});
+}), {}});
 
 const createReducerTree = (tree, path = []) => reduce(tree, (memo, node, key) => {
   const currentPath = path.concat(key);
