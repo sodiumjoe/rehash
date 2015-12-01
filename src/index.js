@@ -1,78 +1,87 @@
 import { default as _assign } from 'lodash.assign';
 import compose from 'lodash.compose';
-import reduce from 'lodash.reduce';
+import isEmpty from 'lodash.isempty';
 import isFunction from 'lodash.isfunction';
 import isPlainObject from 'lodash.isplainobject';
-import isEmpty from 'lodash.isempty';
 import isUndefined from 'lodash.isundefined';
+import reduce from 'lodash.reduce';
 
 export const assign = (...args) => _assign({}, ...args);
 
-export const separateStateAndXforms = tree => reduce(tree, (memo, val, key) => {
-  if (isFunction(val)) {
-    memo.xforms[key] = val;
+export const separateStateAndXforms = tree => reduce(tree, (memo, node, key) => {
+  if (isFunction(node)) {
+    memo.xforms[key] = node;
     return memo;
   }
-  if (isPlainObject(val)) {
-    let { state, xforms } = separateStateAndXforms(val);
+  if (isPlainObject(node)) {
+    let { state, xforms } = separateStateAndXforms(node);
     memo.state[key] = state;
     if (!isEmpty(xforms)) {
       memo.xforms[key] = xforms;
     }
     return memo;
   }
-  memo.state[key] = val;
+  memo.state[key] = node;
   return memo;
 }, {
   state: {},
   xforms: {}
 });
 
-export const createActionCreatorTree = (tree, path = []) => reduce(tree, (memo, val, key) => _assign(memo, {
-  [key]: isFunction(val) ? payload => ({
-    type: path.concat(key).join('.'),
-    payload
-  }) : createActionCreatorTree(val, path.concat(key))
-}), {});
+const isThunk = node => {
+  let isThunk = false;
+  try {
+    isThunk = typeof node() === 'function';
+  } finally {
+    return isThunk;
+  }
+}
 
-export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo, val, key) => _assign(memo, {
-  [key]: isFunction(val)
+const createActionCreatorFn = (fn, type, actionCreatorTree) =>
+  isThunk(fn)
+  ? () => (dispatch, getState) => fn()(dispatch, getState, actionCreatorTree)
+  : payload => ({ type, payload });
+
+export const createActionCreatorTree = (tree, path = [], actionCreatorTree = {}) =>
+  reduce(tree, (memo, node, key) => {
+    let currentPath = path.concat(key);
+    let actionType = currentPath.join('.');
+    return _assign(memo, {
+      [key]: isFunction(node)
+        ? createActionCreatorFn(node, actionType, actionCreatorTree)
+        : createActionCreatorTree(node, currentPath, actionCreatorTree)
+    });
+  }, actionCreatorTree);
+
+export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo, node, key) => _assign(memo, {
+  [key]: isFunction(node)
     ? payload => dispatch(tree[key](payload))
-    : bindActionCreatorTree(val, dispatch, path.concat(key))
+    : bindActionCreatorTree(node, dispatch, path.concat(key))
 }), {});
 
-const createReducerTree = (tree, path = []) => reduce(tree, (memo, val, key) => {
+const createReducerTree = (tree, path = []) => reduce(tree, (memo, node, key) => {
   const currentPath = path.concat(key);
   const actionType = currentPath.join('.');
-  return _assign(memo, {
-    [key]: isFunction(val) ? (state, {type, payload}) => {
-      if (type !== actionType) {
-        return state;
-      }
-      if(isUndefined(state)) {
-        return state;
-      }
-      return val(state, payload);
-    } : createReducerTree(val, currentPath)
+  return isThunk(node) ? memo : _assign(memo, {
+    [key]: !isFunction(node)
+      ? createReducerTree(node, currentPath)
+      : (state, { type, payload }) => (isUndefined(state) || type !== actionType) ? state : node(state, payload)
   });
 }, {});
 
 const recursiveCombineReducers = tree => (state, action) => {
-  return reduce(tree, (memo = {}, val, key) => _assign(memo, isFunction(val) ? val(memo, action) : {
-    [key]: recursiveCombineReducers(val)(memo[key], action)
+  return reduce(tree, (memo = {}, node, key) => _assign(memo, isFunction(node) ? node(memo, action) : {
+    [key]: recursiveCombineReducers(node)(memo[key], action)
   }), state);
 };
 
 export const createReducer = compose(recursiveCombineReducers, createReducerTree);
 
-export const rehash = tree => {
+export const rehash = (tree, actionCreatorFn) => {
 	const { state, xforms } = separateStateAndXforms(tree);
   const actionCreatorTree = createActionCreatorTree(xforms);
-	return {
-		state,
-		reducer: createReducer(xforms),
-		actionCreatorTree
-	};
+  const reducer = createReducer(xforms);
+	return { state, reducer, actionCreatorTree };
 }
 
 export default rehash;
