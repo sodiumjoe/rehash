@@ -62,7 +62,7 @@ export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree,
 const createReducerTree = (tree, path = []) => reduce(tree, (memo, node, key) => {
   const currentPath = path.concat(key);
   const actionType = currentPath.join('.');
-  return isThunk(node) ? memo : _assign(memo, {
+  return isThunk(node) ? memo : _assign({}, memo, {
     [key]: !isFunction(node)
       ? createReducerTree(node, currentPath)
       : (state, { type, payload }) => (isUndefined(state) || type !== actionType) ? state : node(state, payload)
@@ -70,7 +70,7 @@ const createReducerTree = (tree, path = []) => reduce(tree, (memo, node, key) =>
 }, {});
 
 const recursiveCombineReducers = tree => (state, action) => {
-  return reduce(tree, (memo = {}, node, key) => _assign(memo, isFunction(node) ? node(memo, action) : {
+  return reduce(tree, (memo = {}, node, key) => _assign({}, memo, isFunction(node) ? node(memo, action) : {
     [key]: recursiveCombineReducers(node)(memo[key], action)
   }), state);
 };
