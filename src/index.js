@@ -60,7 +60,7 @@ export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree,
   [key]: isFunction(node)
     ? payload => dispatch(tree[key](payload))
     : bindActionCreatorTree(node, dispatch, path.concat(key))
-}), {}});
+}, {})});
 
 const createReducerTree = (tree, path = []) => reduce(tree, (memo, node, key) => {
   const currentPath = path.concat(key);
