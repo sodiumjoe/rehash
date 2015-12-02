@@ -42,15 +42,18 @@ const createActionCreatorFn = (fn, path, actionCreatorTree) =>
   ? () => (dispatch, getState) => fn()(dispatch, getState, actionCreatorTree)
   : payload => ({ type: path.join('.'), payload });
 
-export const createActionCreatorTree = (tree, path = [], actionCreatorTree = {}) =>
-  reduce(tree, (memo, node, key) => {
-    let currentPath = path.concat(key);
+export const createActionCreatorTree = (tree, path = []) => {
+  let ref = {};
+  const walkTree = (tree, path, ref) => reduce(tree, (memo, node, key) => {
+    const currentPath = path.concat(key);
     return _assign(memo, {
       [key]: isFunction(node)
-        ? createActionCreatorFn(node, currentPath, actionCreatorTree)
-        : createActionCreatorTree(node, currentPath, actionCreatorTree)
+        ? createActionCreatorFn(node, currentPath, ref)
+        : walkTree(node, currentPath, ref)
     });
-  }, isEmpty(actionCreatorTree) ? actionCreatorTree : {});
+  }, {})
+  return _assign(ref, walkTree(tree, path, ref));
+};
 
 export const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo, node, key) => {
   return _assign(memo, {
