@@ -44,16 +44,14 @@ const createActionCreatorFn = (fn, path, actionCreatorTree) =>
 
 export const createActionCreatorTree = (tree, path = []) => {
   let ref = {};
-  const walkTree = (tree, path, ref) => {
-    return reduce(tree, (memo, node, key) => {
-      let currentPath = path.concat(key);
-      return _assign(memo, {
-        [key]: isFunction(node)
-          ? createActionCreatorFn(node, currentPath, ref)
-          : walkTree(node, currentPath, ref)
-      });
-    }, {})
-  };
+  const walkTree = (tree, path, ref) => reduce(tree, (memo, node, key) => {
+    const currentPath = path.concat(key);
+    return _assign(memo, {
+      [key]: isFunction(node)
+        ? createActionCreatorFn(node, currentPath, ref)
+        : walkTree(node, currentPath, ref)
+    });
+  }, {});
   return _assign(ref, walkTree(tree, path, ref));
 };
 
