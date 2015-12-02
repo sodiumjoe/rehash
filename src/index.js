@@ -39,7 +39,7 @@ const isThunk = node => {
 
 const createActionCreatorFn = (fn, path, actionCreatorTree) =>
   isThunk(fn)
-  ? () => (dispatch, getState) => fn()(dispatch, getState, actionCreatorTree)
+  ? payload => (dispatch, getState) => fn(payload)(dispatch, getState, actionCreatorTree)
   : payload => ({ type: path.join('.'), payload });
 
 export const createActionCreatorTree = (tree, path = []) => {
