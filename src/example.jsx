@@ -23,7 +23,7 @@ const Welcome = connect(state => state.root)(createClass({
       <div>
         welcome
         {JSON.stringify(this.props.items)}
-				<Link to='/goodbye'>Another route</Link>
+        <Link to='/goodbye'>Another route</Link>
       </div>
     );
   }
@@ -97,10 +97,10 @@ const rehashDef = {
 };
 
 const {
-	actionCreatorTree,
-	reducer: rootReducer,
-	state
-}	= rehash(rehashDef);
+  actionCreatorTree,
+  reducer: rootReducer,
+  state
+} = rehash(rehashDef);
 
 const initialState = { root: state };
 
@@ -124,8 +124,8 @@ window.dispatchTree = bindActionCreatorTree(actionCreatorTree, store.dispatch);
 /* Render */
 
 render(
-	<Provider store={store}>
-		<ReduxRouter />
-	</Provider>,
-	document.getElementById('app')
+  <Provider store={store}>
+    <ReduxRouter />
+  </Provider>,
+  document.getElementById('app')
 );

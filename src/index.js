@@ -39,8 +39,8 @@ const isThunk = node => {
 
 const createActionCreatorFn = (fn, path, actionCreatorTree) =>
   isThunk(fn)
-  ? payload => (dispatch, getState) => fn(payload)(dispatch, getState, actionCreatorTree)
-  : payload => ({ type: path.join('.'), payload });
+    ? payload => (dispatch, getState) => fn(payload)(dispatch, getState, actionCreatorTree)
+    : payload => ({ type: path.join('.'), payload });
 
 export const createActionCreatorTree = (tree, path = []) => {
   let ref = {};
@@ -80,10 +80,10 @@ const recursiveCombineReducers = tree => (state, action) => {
 export const createReducer = compose(recursiveCombineReducers, createReducerTree);
 
 export const rehash = (tree, actionCreatorFn) => {
-	const { state, xforms } = separateStateAndXforms(tree);
+  const { state, xforms } = separateStateAndXforms(tree);
   const actionCreatorTree = createActionCreatorTree(xforms);
   const reducer = createReducer(xforms);
-	return { state, reducer, actionCreatorTree };
+  return { state, reducer, actionCreatorTree };
 }
 
 export default rehash;

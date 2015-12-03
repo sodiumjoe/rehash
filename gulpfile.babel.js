@@ -20,9 +20,9 @@ const libCompiler = webpack({
   entry: [
     './src/index'
   ],
-	resolve: {
-		extensions: ['', '.jsx', '.js']
-	},
+  resolve: {
+    extensions: ['', '.jsx', '.js']
+  },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'index.js',
@@ -43,9 +43,9 @@ const exampleCompiler = webpack({
   entry: [
     './src/example.jsx'
   ],
-	resolve: {
-		extensions: ['', '.jsx', '.js']
-	},
+  resolve: {
+    extensions: ['', '.jsx', '.js']
+  },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'example.js'
@@ -124,26 +124,26 @@ gulp.task('build:dev', cb => {
 });
 
 gulp.task('server', () => {
-	require('http').createServer(ecstatic({
-		root: __dirname
-	})).listen(PORT);
-	console.log(`Server started at http://localhost:${PORT}/`);
+  require('http').createServer(ecstatic({
+    root: __dirname
+  })).listen(PORT);
+  console.log(`Server started at http://localhost:${PORT}/`);
 });
 
 gulp.task('watch', () => {
-	gulp.watch('src/example.jsx', ['build:dev']);
-	gulp.watch(['src/index.js', 'test/**/*.js'], ['build', 'build:dev', 'test']);
+  gulp.watch('src/example.jsx', ['build:dev']);
+  gulp.watch(['src/index.js', 'test/**/*.js'], ['build', 'build:dev', 'test']);
 });
 
 gulp.task('build-test', () => {
-	return gulp.src('test/**/*.js*')
-		.pipe(gulpBabel())
-		.pipe(gulp.dest(TEST_DIR));
+  return gulp.src('test/**/*.js*')
+    .pipe(gulpBabel())
+    .pipe(gulp.dest(TEST_DIR));
 });
 
 gulp.task('test', ['build', 'build-test'], () => {
-	return gulp.src(path.join(TEST_DIR, '**/*spec.js'))
-		.pipe(mocha({
-			reporter: 'nyan'
-		}));
+  return gulp.src(path.join(TEST_DIR, '**/*spec.js'))
+    .pipe(mocha({
+      reporter: 'nyan'
+    }));
 });
