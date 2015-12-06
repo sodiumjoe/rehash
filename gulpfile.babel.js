@@ -2,14 +2,14 @@ import _ from 'lodash';
 import del from 'del';
 import ecstatic from 'ecstatic';
 import gulp from 'gulp';
-import gulpBabel from 'gulp-babel';
 import gutil from 'gulp-util';
-import mocha from 'gulp-spawn-mocha';
+import { Server } from 'karma';
 import path from 'path';
 import runSequence from 'run-sequence';
 import webpack from 'webpack';
 
 const PORT = 8899;
+const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
 const BUNDLE_DIR = path.join(BUILD_DIR, 'bundle');
 const DEV_DIR = path.join(BUILD_DIR, 'dev');
@@ -18,7 +18,7 @@ const TEST_DIR = path.join(BUILD_DIR, 'test');
 const libCompiler = webpack({
   devtool: 'source-map',
   entry: [
-    './src/index'
+    path.join(SRC_DIR, 'index')
   ],
   resolve: {
     extensions: ['', '.jsx', '.js']
@@ -30,18 +30,23 @@ const libCompiler = webpack({
     libraryTarget: 'commonjs2'
   },
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel'],
-      include: path.join(__dirname, 'src')
-    }]
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'babel',
+        query: {
+          presets: ['react', 'es2015']
+        }
+      }
+    ]
   }
 });
 
 const exampleCompiler = webpack({
   devtool: 'source-map',
   entry: [
-    './src/example.jsx'
+    path.join(SRC_DIR, 'example.jsx')
   ],
   resolve: {
     extensions: ['', '.jsx', '.js']
@@ -51,17 +56,22 @@ const exampleCompiler = webpack({
     filename: 'example.js'
   },
   module: {
-    loaders: [{
-      test: /\.jsx?$/,
-      loaders: ['babel'],
-      include: path.join(__dirname, 'src')
-    }]
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: 'babel',
+        query: {
+          presets: ['react', 'es2015']
+        }
+      }
+    ]
   }
 });
 
 gulp.task('default', ['dev']);
 
-gulp.task('prepublish', cb => runSequence('clean', 'build' , cb));
+gulp.task('prepublish', cb => runSequence('clean', 'test', 'build' , cb));
 
 gulp.task('clean', cb => del(['dist'], cb));
 
@@ -131,19 +141,18 @@ gulp.task('server', () => {
 });
 
 gulp.task('watch', () => {
-  gulp.watch('src/example.jsx', ['build:dev']);
-  gulp.watch(['src/index.js', 'test/**/*.js'], ['build', 'build:dev', 'test']);
+  gulp.watch(path.join(SRC_DIR, '**/*.js*'), ['build:dev']);
 });
 
-gulp.task('build-test', () => {
-  return gulp.src('test/**/*.js*')
-    .pipe(gulpBabel())
-    .pipe(gulp.dest(TEST_DIR));
+gulp.task('test', done => {
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
 });
 
-gulp.task('test', ['build', 'build-test'], () => {
-  return gulp.src(path.join(TEST_DIR, '**/*spec.js'))
-    .pipe(mocha({
-      reporter: 'nyan'
-    }));
+gulp.task('tdd', done => {
+  new Server({
+    configFile: __dirname + '/karma.conf.js'
+  }, done).start();
 });

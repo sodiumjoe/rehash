@@ -3,7 +3,7 @@ import React, { createClass } from 'react';
 import { connect, Provider } from 'react-redux';
 import { Link, Route, IndexRoute } from 'react-router';
 import { ReduxRouter, routerStateReducer, reduxReactRouter } from 'redux-router';
-import rehash, { assign, bindActionCreatorTree } from './index.js';
+import rehash, { assign, async, bindActionCreatorTree, isThunk, thunkCreateActionCreator } from './index.js';
 import _ from 'lodash';
 import { createStore, compose, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
@@ -51,22 +51,20 @@ const routes = (
 
 /* Reducer */
 
-const rehashDef = {
+const storeDef = {
 
   items: ['foo'],
 
-  addItem(state, item) {
-    return assign(state, {
-      items: state.items ? state.items.concat(item) : [item]
-    });
-  },
+  addItem: (state, item) => assign(state, {
+    items: state.items.concat(item)
+  }),
 
   pagination: {
 
     currentPageIndex: 0,
     totalPages: 5,
 
-    onPageSelect(state, pageNum) {
+    onPageSelect: (state, pageNum) => {
       if (!pageNum) {
         return state;
       }
@@ -79,6 +77,11 @@ const rehashDef = {
         currentPageIndex: pageIndex < 0 ? 0 : pageIndex > maxPageIndex ? maxPageIndex : pageIndex
       });
     },
+
+    asyncPageSelect: async(payload => (dispatch, getState, actionCreatorTree) => {
+      dispatch(actionCreatorTree.pagination.onPageSelect(payload));
+      setTimeout(() => dispatch(actionCreatorTree.pagination.onPageSelect(1)), 1000);
+    }),
 
     pageSizes: [ 50, 100, 250 ],
     selectedPageSize: 50,
@@ -96,11 +99,16 @@ const rehashDef = {
 
 };
 
+const opts = {
+  createActionCreator: thunkCreateActionCreator,
+  reducerTreeFilterFn: isThunk
+};
+
 const {
   actionCreatorTree,
   reducer: rootReducer,
   state
-} = rehash(rehashDef);
+} = rehash(storeDef, opts);
 
 const initialState = { root: state };
 
