@@ -1,6 +1,6 @@
 {
   "name": "rehash",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Some utilities for use with redux",
   "main": "dist/index.js",
   "repository": {
