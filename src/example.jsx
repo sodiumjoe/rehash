@@ -11,34 +11,22 @@ import { createHistory } from 'history';
 
 /* Containers */
 
-const App = createClass({
-  render() {
-    return <div>{this.props.children}</div>;
-  }
-});
+const App = props => <div>{props.children}</div>;
 
-const Welcome = connect(state => state.root)(createClass({
-  render() {
-    return (
-      <div>
-        welcome
-        {JSON.stringify(this.props.items)}
-        <Link to='/goodbye'>Another route</Link>
-      </div>
-    );
-  }
-}));
+const Welcome = connect(state => state.root)(props => (
+  <div>
+    welcome
+    {JSON.stringify(this.props.items)}
+    <Link to='/goodbye'>Another route</Link>
+  </div>
+));
 
-const Goodbye = connect(state => state.root)(createClass({
-  render() {
-    return (
-      <div>
-        goodbye
-        {JSON.stringify(this.props.pagination)}
-      </div>
-    );
-  }
-}));
+const Goodbye = connect(state => state.root)(props => (
+  <div>
+    goodbye
+    {JSON.stringify(this.props.pagination)}
+  </div>
+));
 
 /* Routes */
 
