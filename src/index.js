@@ -3,7 +3,7 @@ import isEmpty from 'lodash.isempty';
 import isFunction from 'lodash.isfunction';
 import isPlainObject from 'lodash.isplainobject';
 import reduce from 'lodash.reduce';
-import { async, bindActionCreatorTree, createActionCreatorTree, isThunk, thunkCreateActionCreator } from './actionCreatorTree';
+import { async, createDispatchTree, isThunk, thunkCreateActionCreator } from './dispatchTree';
 import { createReducer } from './reducer';
 
 const _assign = (...args) => assign({}, ...args);
@@ -30,16 +30,14 @@ const separateStateAndXforms = tree => reduce(tree, (memo, node, key) => {
 
 const rehash = (tree, opts = {}) => {
   const { state, xforms } = separateStateAndXforms(tree);
-  const actionCreatorTree = createActionCreatorTree(xforms, opts.createActionCreator);
   const reducer = createReducer(xforms, opts.reducerTreeFilterFn);
-  return { state, reducer, actionCreatorTree };
+  const getDispatchTree = createDispatchTree(xforms, opts.createActionCreator);
+  return { state, reducer, getDispatchTree };
 };
 
 export {
   async,
   _assign as assign,
-  bindActionCreatorTree,
-  createActionCreatorTree,
   createReducer,
   isThunk,
   rehash,

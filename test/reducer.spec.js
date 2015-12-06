@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { expect } from 'chai';
 import { assign } from '../src/index';
-import { async, isThunk } from '../src/actionCreatorTree';
+import { async, isThunk } from '../src/dispatchTree';
 import { createReducerTree, recursiveCombineReducers } from '../src/reducer';
 
 const pureXforms = {
@@ -16,9 +16,9 @@ const pureXforms = {
 };
 
 const xformsWithThunks = _.assign({}, pureXforms, {
-  thunkXform: async(payload => (dispatch, getState, actionCreatorTree) => [payload, dispatch, getState, actionCreatorTree]),
+  thunkXform: async(payload => (dispatchTree, getState) => [payload, dispatchTree, getState]),
   thunk: {
-    nestedThunkXform: async(payload => (dispatch, getState, actionCreatorTree) => [payload, dispatch, getState, actionCreatorTree])
+    nestedThunkXform: async(payload => (dispatchTree, getState) => [payload, dispatchTree, getState])
   }
 });
 

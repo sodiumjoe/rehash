@@ -2,7 +2,7 @@ module.exports = function(config) {
   config.set({
     files: [{ pattern: '**/*.js', watched: false, included: true, served: true }],
     basePath: './test',
-    frameworks: ['mocha'],
+    frameworks: ['mocha', 'sinon'],
     reporters: ['nyan'],
     client: {
       mocha: {
@@ -43,7 +43,8 @@ module.exports = function(config) {
       require('karma-mocha'),
       require('karma-chrome-launcher'),
       require('karma-nyan-reporter'),
-      require('karma-sourcemap-loader')
+      require('karma-sourcemap-loader'),
+      require('karma-sinon')
     ]
 
   });

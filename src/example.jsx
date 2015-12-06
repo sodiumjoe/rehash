@@ -3,7 +3,7 @@ import React, { createClass } from 'react';
 import { connect, Provider } from 'react-redux';
 import { Link, Route, IndexRoute } from 'react-router';
 import { ReduxRouter, routerStateReducer, reduxReactRouter } from 'redux-router';
-import rehash, { assign, async, bindActionCreatorTree, isThunk, thunkCreateActionCreator } from './index.js';
+import rehash, { assign, async, isThunk, thunkCreateActionCreator } from './index.js';
 import _ from 'lodash';
 import { createStore, compose, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
@@ -78,9 +78,9 @@ const storeDef = {
       });
     },
 
-    asyncPageSelect: async(payload => (dispatch, getState, actionCreatorTree) => {
-      dispatch(actionCreatorTree.pagination.onPageSelect(payload));
-      setTimeout(() => dispatch(actionCreatorTree.pagination.onPageSelect(1)), 1000);
+    asyncPageSelect: async(payload => (dispatchTree, getState) => {
+      dispatchTree.pagination.onPageSelect(payload);
+      setTimeout(() => dispatchTree.pagination.onPageSelect(1), 1000);
     }),
 
     pageSizes: [ 50, 100, 250 ],
@@ -105,7 +105,7 @@ const opts = {
 };
 
 const {
-  actionCreatorTree,
+  getDispatchTree,
   reducer: rootReducer,
   state
 } = rehash(storeDef, opts);
@@ -126,8 +126,7 @@ const store = compose(
 
 store.subscribe(() => console.log(store.getState()));
 window.store = store;
-window.actionCreatorTree = actionCreatorTree;
-window.dispatchTree = bindActionCreatorTree(actionCreatorTree, store.dispatch);
+window.dispatchTree = getDispatchTree(store.dispatch);
 
 /* Render */
 
