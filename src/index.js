@@ -30,7 +30,7 @@ const separateStateAndXforms = tree => reduce(tree, (memo, node, key) => {
 
 const rehash = (tree, opts = {}) => {
   const { state, xforms } = separateStateAndXforms(tree);
-  const reducer = createReducer(xforms, opts.reducerTreeFilterFn);
+  const reducer = createReducer(xforms, opts.reducerTreeFilterFn, opts.actionHandler);
   const getDispatchTree = createDispatchTree(xforms, opts.createActionCreator);
   return { state, reducer, getDispatchTree };
 };
