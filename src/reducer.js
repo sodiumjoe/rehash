@@ -5,7 +5,7 @@ import reduce from 'lodash.reduce';
 
 const defaultReducerTreeFilterFn = () => false;
 
-export const createReducerTree = (tree, reducerTreeFilterFn = defaultReducerTreeFilterFn, path = []) => reduce(tree, (memo, node, key) => {
+const createReducerTree = (tree, reducerTreeFilterFn = defaultReducerTreeFilterFn, path = []) => reduce(tree, (memo, node, key) => {
   const currentPath = path.concat(key);
   const actionType = currentPath.join('.');
   return reducerTreeFilterFn(node) ? memo : assign({}, memo, {
@@ -15,13 +15,19 @@ export const createReducerTree = (tree, reducerTreeFilterFn = defaultReducerTree
   });
 }, {});
 
-export const recursiveCombineReducers = tree => (state, action) => {
+const recursiveCombineReducers = tree => (state, action) => {
   return reduce(tree, (memo = {}, node, key) => assign({}, memo, isFunction(node) ? node(memo, action) : {
     [key]: recursiveCombineReducers(node)(memo[key], action)
   }), state);
 };
 
-export const createReducer = (tree, reducerTreeFilterFn) => {
+const createReducer = (tree, reducerTreeFilterFn) => {
   const reducerTree = createReducerTree(tree, reducerTreeFilterFn);
   return recursiveCombineReducers(reducerTree);
 }
+
+export {
+  createReducer,
+  createReducerTree,
+  recursiveCombineReducers
+};

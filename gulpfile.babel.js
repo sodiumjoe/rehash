@@ -9,7 +9,7 @@ import runSequence from 'run-sequence';
 import webpack from 'webpack';
 
 const PORT = 8899;
-const SRC_DIR = 'src';
+const SRC_DIR = path.join(__dirname, 'src');
 const BUILD_DIR = 'dist';
 const BUNDLE_DIR = path.join(BUILD_DIR, 'bundle');
 const DEV_DIR = path.join(BUILD_DIR, 'dev');
@@ -18,10 +18,10 @@ const TEST_DIR = path.join(BUILD_DIR, 'test');
 const libCompiler = webpack({
   devtool: 'source-map',
   entry: [
-    path.join(SRC_DIR, 'index')
+    path.join(SRC_DIR, 'index.js')
   ],
   resolve: {
-    extensions: ['', '.jsx', '.js']
+    extensions: ['', '.js']
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -40,7 +40,11 @@ const libCompiler = webpack({
         }
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.optimize.UglifyJsPlugin()
+  ]
 });
 
 const exampleCompiler = webpack({

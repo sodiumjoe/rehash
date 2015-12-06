@@ -6,9 +6,9 @@ import reduce from 'lodash.reduce';
 import { async, bindActionCreatorTree, createActionCreatorTree, isThunk, thunkCreateActionCreator } from './actionCreatorTree';
 import { createReducer } from './reducer';
 
-export const _assign = (...args) => assign({}, ...args);
+const _assign = (...args) => assign({}, ...args);
 
-export const separateStateAndXforms = tree => reduce(tree, (memo, node, key) => {
+const separateStateAndXforms = tree => reduce(tree, (memo, node, key) => {
   if (isFunction(node)) {
     memo.xforms[key] = node;
     return memo;
@@ -28,7 +28,7 @@ export const separateStateAndXforms = tree => reduce(tree, (memo, node, key) => 
   xforms: {}
 });
 
-export const rehash = (tree, opts = {}) => {
+const rehash = (tree, opts = {}) => {
   const { state, xforms } = separateStateAndXforms(tree);
   const actionCreatorTree = createActionCreatorTree(xforms, opts.createActionCreator);
   const reducer = createReducer(xforms, opts.reducerTreeFilterFn);
@@ -42,6 +42,8 @@ export {
   createActionCreatorTree,
   createReducer,
   isThunk,
+  rehash,
+  separateStateAndXforms,
   thunkCreateActionCreator
 };
 
