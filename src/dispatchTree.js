@@ -10,7 +10,7 @@ const defaultCreateActionCreator = path => payload => ({ type: path.join('.'), p
 
 const thunkCreateActionCreator = (path, fn, dispatchTree) =>
   isThunk(fn)
-    ? payload => (dispatch, getState) => fn(payload)(dispatchTree, getState)
+    ? payload => (dispatch, getState) => fn(payload)(dispatchTree, getState, dispatch)
     : defaultCreateActionCreator(path);
 
 const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo, node, key) => assign(memo, {

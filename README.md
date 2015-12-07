@@ -177,7 +177,7 @@ const storeDef = {
     })
   },
   // wrap the thunk xform so rehash knows what to do with it
-  thunkActionCreator: async(payload => (dispatchTree, getState) => {
+  thunkActionCreator: async(payload => (dispatchTree, getState, dispatch) => {
     setTimeout(dispatchTree.addItem(payload), 1000);
   })
 };
