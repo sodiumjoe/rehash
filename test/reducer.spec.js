@@ -173,4 +173,8 @@ describe('recursiveCombineReducers', () => {
     });
   });
 
+  describe('opts.rootPath', () => {
+    it('should prepend action.type with the supplied rootPath');
+  });
+
 });
