@@ -32,8 +32,8 @@ const recursiveCombineReducers = tree => (state, action) => {
   }), state);
 };
 
-const createReducer = (tree, reducerTreeFilterFn, actionHandler) => {
-  const reducerTree = createReducerTree(tree, reducerTreeFilterFn, actionHandler);
+const createReducer = (tree, reducerTreeFilterFn, actionHandler, rootPath) => {
+  const reducerTree = createReducerTree(tree, reducerTreeFilterFn, actionHandler, rootPath);
   return recursiveCombineReducers(reducerTree);
 }
 

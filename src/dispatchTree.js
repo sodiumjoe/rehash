@@ -19,7 +19,7 @@ const bindActionCreatorTree = (tree, dispatch, path = []) => reduce(tree, (memo,
     : bindActionCreatorTree(node, dispatch, path.concat(key))
 }), {});
 
-const createDispatchTree = (tree, createActionCreator = defaultCreateActionCreator) => dispatch => {
+const createDispatchTree = (tree, createActionCreator = defaultCreateActionCreator, rootPath) => dispatch => {
   let dispatchTree = {};
   const createActionCreatorTree = (tree, path = []) => reduce(tree, (memo, node, key) => {
     const currentPath = path.concat(key);
@@ -29,7 +29,7 @@ const createDispatchTree = (tree, createActionCreator = defaultCreateActionCreat
         : createActionCreatorTree(node, currentPath)
     });
   }, {});
-  return assign(dispatchTree, bindActionCreatorTree(createActionCreatorTree(tree), dispatch));
+  return assign(dispatchTree, bindActionCreatorTree(createActionCreatorTree(tree, rootPath), dispatch));
 };
 
 export {

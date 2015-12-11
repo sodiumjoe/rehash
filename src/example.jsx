@@ -16,7 +16,7 @@ const App = props => <div>{props.children}</div>;
 const Welcome = connect(state => state.root)(props => (
   <div>
     welcome
-    {JSON.stringify(this.props.items)}
+    {JSON.stringify(props.items)}
     <Link to='/goodbye'>Another route</Link>
   </div>
 ));
@@ -24,7 +24,7 @@ const Welcome = connect(state => state.root)(props => (
 const Goodbye = connect(state => state.root)(props => (
   <div>
     goodbye
-    {JSON.stringify(this.props.pagination)}
+    {JSON.stringify(props.pagination)}
   </div>
 ));
 
