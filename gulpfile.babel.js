@@ -12,7 +12,6 @@ const PORT = 8899;
 const SRC_DIR = path.join(__dirname, 'src');
 const BUILD_DIR = 'dist';
 const BUNDLE_DIR = path.join(BUILD_DIR, 'bundle');
-const DEV_DIR = path.join(BUILD_DIR, 'dev');
 const TEST_DIR = path.join(BUILD_DIR, 'test');
 
 const libCompiler = webpack({
