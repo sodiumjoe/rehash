@@ -155,7 +155,7 @@ const thunkActionCreator = payload => (dispatch, getState) => {
 
   // OR
 
-  setTimeout(() => dispatchTree.nested.addItem('foo'));
+  setTimeout(() => dispatchTree.nested.addItem('foo'), 1000);
 });
 ```
 
@@ -185,7 +185,7 @@ const storeDef = {
 const opts = {
   // a rehash-provided config function to interpret thunks in your store def
   createActionCreator: thunkCreateActionCreator,
-  // tells rehash to reduce thunk xforms when creating the reducer
+  // tells rehash to ignore thunk xforms when creating the reducer
   reducerTreeFilterFn: isThunk
 };
 
