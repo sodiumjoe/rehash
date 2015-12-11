@@ -127,7 +127,7 @@ store.dispatch({
   payload: 'foo'
 });
 
-dispatchTree.ntested.addItem('foo');
+dispatchTree.nested.addItem('foo');
 ```
 
 ### Thunks
